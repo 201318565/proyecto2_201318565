@@ -723,7 +723,7 @@ void jugarDefensor(WINDOW *win){
   	   		}
 
   	   	}else{
-  	   		//actualizarDisparos(win);
+  	   		actualizarDisparos(win);
 			//actualizarCompartidos(win);	
   	   	}
           punteroMemoria->turno = 2;
@@ -771,29 +771,6 @@ void dekker2(WINDOW *win){
           break;
      }
 }
-
-
-void Actua(WINDOW *win){
-	attron(COLOR_PAIR(5));
-
-		for (int i = 0; i < 10; ++i)
-		{	
-			if(punteroMemoria->disparos[i].s==1){
-				move(punteroMemoria->disparos[i].y+1,punteroMemoria->disparos[i].x);
-				addch(' ');
-				move(punteroMemoria->disparos[i].y,punteroMemoria->disparos[i].x);
-				addch(punteroMemoria->disparos[i].ch);
-			}else{
-				move(punteroMemoria->disparos[i].y+1,punteroMemoria->disparos[i].x);
-				addch(' ');
-				move(punteroMemoria->disparos[i].y,punteroMemoria->disparos[i].x);
-				addch(' ');
-			}
-
-		}
-		attroff(COLOR_PAIR(5));
-}
-	//izquierda
 
 void generarDisparoInvasor(WINDOW *win, int nave){
 	int hayEspacio=0;
@@ -971,8 +948,7 @@ void redibujarInvasor(WINDOW *win , int posX, int lado){
 						comandante_invasor.x5p = 	comandante_invasor.x5;
 						comandante_invasor.x6p = 	comandante_invasor.x6;
 						comandante_invasor.x7p = 	comandante_invasor.x7;
-		attroff(COLOR_PAIR(5));
-		
+		attroff(COLOR_PAIR(5));		
 }
 
 void generarDisparo(WINDOW *win){
@@ -991,7 +967,7 @@ void generarDisparo(WINDOW *win){
 		punteroMemoria->disparos[i].yp = punteroMemoria->disparos[i].y;
 		punteroMemoria->disparos[i].s = 1;
 		punteroMemoria->disparos[i].ch = '*';
-		//actualizarDisparos (win);
+		//
         attron(COLOR_PAIR(4));
 		move(punteroMemoria->disparos[i].y,punteroMemoria->disparos[i].x);
         addch(punteroMemoria->disparos[i].ch);
