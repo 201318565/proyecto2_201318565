@@ -197,8 +197,6 @@ struct structMemoria {
 		     printf("   Client exits...\n");
 		}
 
-	      
-	void redibujarDefensorSiempre(WINDOW *win);
 
 /*************************************************  METODOS ******************************/
 void initGlobales2(){
@@ -210,29 +208,27 @@ void initGlobales2(){
 	punteroMemoria->ladoDEF= 0;
 	punteroMemoria->posXDefensor = 38;
 	punteroMemoria->posXInvasor = 38;
-	//punteroMemoria->vidasDefensor = 5;
-	//punteroMemoria->vidasInvasor = 5;
 	punteroMemoria->posYDefensor=20;
-	//punteroMemoria->posYInvasor=20-3;
+	punteroMemoria->posYInvasor=3;
 
+	punteroMemoria->comandante_defensor.vidas = 5;
+	punteroMemoria->comandante_defensor.ch1 = '<';
+	punteroMemoria->comandante_defensor.ch2 = '<';
+	punteroMemoria->comandante_defensor.ch3 = '=';
+	punteroMemoria->comandante_defensor.ch4 = '=';
+	punteroMemoria->comandante_defensor.ch5 = '=';
+	punteroMemoria->comandante_defensor.ch6 = '>';
+	punteroMemoria->comandante_defensor.ch7 = '>';
+	punteroMemoria->comandante_defensor.x1p=3; 
+	punteroMemoria->comandante_defensor.x2p=3; 
+	punteroMemoria->comandante_defensor.x3p=3; 
+	punteroMemoria->comandante_defensor.x4p=3; 
+	punteroMemoria->comandante_defensor.x5p=3;
+	punteroMemoria->comandante_defensor.x6p=3;
+	punteroMemoria->comandante_defensor.x7p=3;
+	punteroMemoria->comandante_defensor.y=20;
 
-		punteroMemoria->comandante_defensor.ch1 = '<';
-		punteroMemoria->comandante_defensor.ch2 = '<';
-		punteroMemoria->comandante_defensor.ch3 = '=';
-		punteroMemoria->comandante_defensor.ch4 = '=';
-		punteroMemoria->comandante_defensor.ch5 = '=';
-		punteroMemoria->comandante_defensor.ch6 = '>';
-		punteroMemoria->comandante_defensor.ch7 = '>';
-			punteroMemoria->comandante_defensor.x1p=3; 
-			punteroMemoria->comandante_defensor.x2p=3; 
-			punteroMemoria->comandante_defensor.x3p=3; 
-			punteroMemoria->comandante_defensor.x4p=3; 
-			punteroMemoria->comandante_defensor.x5p=3;
-			punteroMemoria->comandante_defensor.x6p=3;
-			punteroMemoria->comandante_defensor.x7p=3;
-			punteroMemoria->comandante_defensor.y=20;
-
-			comandante_invasor.y=3;
+	comandante_invasor.y=3;
 	punteroMemoria->comandante_invasor.vidas=5;
 	comandante_invasor.ch1 = '<';
 	comandante_invasor.ch2 = '<';
@@ -619,7 +615,7 @@ void jugarInvasor(WINDOW *win){
 	generarDisparoInvasor(win,17);
 	while(1) {  	
 		/** CODIGO DEKKER*/
-		/*
+		
 		punteroMemoria->p2_puede_entrar = true;
           while( punteroMemoria->p1_puede_entrar ){
                if( punteroMemoria->turno == 1 ){
@@ -633,8 +629,8 @@ void jugarInvasor(WINDOW *win){
           punteroMemoria->turno = 1;
           punteroMemoria->p2_puede_entrar = false;
 	
-        Actua(win);
-  	   	actualizarDisparoInvasor(win);
+       // Actua(win);
+  	   	//actualizarDisparoInvasor(win);
   	   	if(contadorTimer ==20){
   	   		actualizarTimer(win);
   	   		contadorTimer=0;
@@ -652,8 +648,8 @@ void jugarInvasor(WINDOW *win){
   	   	}else{
 			actualizarCompartidos(win);
   	   	}
-		*/
-		//redibujarDefensor(win,20,0);
+		
+		
 	   	usleep(1000000/20);
 	   	++contadorTimer;
 	   	key = getch();
@@ -701,10 +697,7 @@ void jugarDefensor(WINDOW *win){
                }
           }
        		/*Region critica*/
-        //
-          //printf("%i\n",punteroMemoria->posXDefensor);
-
-          mvwprintw(win, 10, 10, "%d", punteroMemoria->posXDefensor);
+         // mvwprintw(win, 10, 10, "%d", punteroMemoria->posXDefensor);
           redibujarDefensor(win,punteroMemoria->posXDefensor,punteroMemoria->ladoDEF);
           if(contadorTimer ==20){
   	   		actualizarTimer(win);
@@ -724,7 +717,7 @@ void jugarDefensor(WINDOW *win){
 
   	   	}else{
   	   		actualizarDisparos(win);
-			//actualizarCompartidos(win);	
+			actualizarCompartidos(win);	
   	   	}
           punteroMemoria->turno = 2;
           punteroMemoria->p1_puede_entrar = false;
@@ -1515,7 +1508,7 @@ void actualizarCompartidos(WINDOW *win){
 	mvwprintw(win, 1, 10, "%s", ":");
     mvwprintw(win, 1, 11, "%d", punteroMemoria->segundos);
 	mvwprintw(win, 24-2, 8, "%d", punteroMemoria->puntajeDefensor);	
-	mvwprintw(win, 24-2, 76, "%i" ,punteroMemoria->comandante_defensor.vidas);
+	//mvwprintw(win, 24-2, 76, "%i" ,punteroMemoria->comandante_defensor.vidas);
 	mvwprintw(win, 1, 75, "%i", punteroMemoria->comandante_invasor.vidas);
 	attroff(COLOR_PAIR(4));
 //	redibujarDefensorSiempre(win);
