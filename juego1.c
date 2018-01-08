@@ -103,7 +103,7 @@
 
 int valyM = 5;
 //struct comandante comandante_defensor;
-struct comandante comandante_invasor;
+//struct comandante comandante_invasor;
 struct structMemoria {
 		int status;
 	    int  minutos;
@@ -119,6 +119,7 @@ struct structMemoria {
 	int vidasDefensor;
 	int vidasInvasor;
 	  	int ladoDEF;
+	  	int termino100;
 	   	//struct Dato data2[4];
 	    bool p1_puede_entrar, p2_puede_entrar;
 	    int turno;
@@ -196,8 +197,6 @@ struct structMemoria {
 		     printf("   Client has detached its shared structMemoria...\n");
 		     printf("   Client exits...\n");
 		}
-
-
 /*************************************************  METODOS ******************************/
 void initGlobales2(){
 	for (int i = 0; i < 10; ++i)
@@ -228,15 +227,23 @@ void initGlobales2(){
 	punteroMemoria->comandante_defensor.x7p=3;
 	punteroMemoria->comandante_defensor.y=20;
 
-	comandante_invasor.y=3;
-	punteroMemoria->comandante_invasor.vidas=5;
-	comandante_invasor.ch1 = '<';
-	comandante_invasor.ch2 = '<';
-	comandante_invasor.ch3 = '=';
-	comandante_invasor.ch4 = '=';
-	comandante_invasor.ch5 = '=';
-	comandante_invasor.ch6 = '>';
-	comandante_invasor.ch7 = '>';
+	punteroMemoria->comandante_invasor.vidas = 5;
+	punteroMemoria->comandante_invasor.ch1 = '<';
+	punteroMemoria->comandante_invasor.ch2 = '<';
+	punteroMemoria->comandante_invasor.ch3 = '=';
+	punteroMemoria->comandante_invasor.ch4 = '=';
+	punteroMemoria->comandante_invasor.ch5 = '=';
+	punteroMemoria->comandante_invasor.ch6 = '>';
+	punteroMemoria->comandante_invasor.ch7 = '>';
+	punteroMemoria->comandante_invasor.x1p=3; 
+	punteroMemoria->comandante_invasor.x2p=3; 
+	punteroMemoria->comandante_invasor.x3p=3; 
+	punteroMemoria->comandante_invasor.x4p=3; 
+	punteroMemoria->comandante_invasor.x5p=3;
+	punteroMemoria->comandante_invasor.x6p=3;
+	punteroMemoria->comandante_invasor.x7p=3;
+	punteroMemoria->comandante_invasor.y=3;
+	punteroMemoria->termino100= 0;
 }
 		   
 void initGlobales(){
@@ -615,7 +622,6 @@ void jugarInvasor(WINDOW *win){
 	generarDisparoInvasor(win,17);
 	while(1) {  	
 		/** CODIGO DEKKER*/
-		
 		punteroMemoria->p2_puede_entrar = true;
           while( punteroMemoria->p1_puede_entrar ){
                if( punteroMemoria->turno == 1 ){
@@ -624,13 +630,11 @@ void jugarInvasor(WINDOW *win){
                     punteroMemoria->p2_puede_entrar = true;
                }
           }
-          //RegionCritica(win);
-          redibujarDefensor(win,punteroMemoria->posXDefensor,punteroMemoria->ladoDEF);
-          punteroMemoria->turno = 1;
-          punteroMemoria->p2_puede_entrar = false;
-	
-       // Actua(win);
-  	   	//actualizarDisparoInvasor(win);
+          /*************************************************************region critica*/
+        redibujarInvasor(win,punteroMemoria->posXInvasor,lado);
+        redibujarDefensor(win,punteroMemoria->posXDefensor,punteroMemoria->ladoDEF);
+        punteroMemoria->turno = 1;
+        punteroMemoria->p2_puede_entrar = false;
   	   	if(contadorTimer ==20){
   	   		actualizarTimer(win);
   	   		contadorTimer=0;
@@ -648,12 +652,12 @@ void jugarInvasor(WINDOW *win){
   	   	}else{
 			actualizarCompartidos(win);
   	   	}
-		
-		
-	   	usleep(1000000/20);
+
+  	   //	usleep(1000000/20);
 	   	++contadorTimer;
 	   	key = getch();
-		//redibujarInvasor(win,punteroMemoria->posXInvasor,lado);
+	   	//redibujarDefensor(win,punteroMemoria->posXDefensor,punteroMemoria->ladoDEF);
+		
 		if (key == 'o'){//izquierda 99-c
 	      	if(punteroMemoria->posXInvasor>2){
 	      		--punteroMemoria->posXInvasor;
@@ -675,6 +679,15 @@ void jugarInvasor(WINDOW *win){
 	    }else if(key=='4'){
 			generarDisparoInvasor(win,20);
 	    }
+		
+		/*************************************** termina region critica*************/
+		  punteroMemoria->turno = 1;
+          punteroMemoria->p2_puede_entrar = false;
+          usleep(1000000/20);
+
+	   	if(punteroMemoria->termino100 ==1){
+	   		break;
+	   	}
 
     }
 	gameover(0);
@@ -682,6 +695,7 @@ void jugarInvasor(WINDOW *win){
 
 void jugarDefensor(WINDOW *win){
 	int key=0;
+	int lado = 0;
 	//int lado= 0;//izquierda
 	int contadorTimer = 20;
 	char ladoc = 'd';
@@ -696,9 +710,10 @@ void jugarDefensor(WINDOW *win){
                     punteroMemoria->p1_puede_entrar = true;
                }
           }
-       		/*Region critica*/
-         // mvwprintw(win, 10, 10, "%d", punteroMemoria->posXDefensor);
+       		/*Region critica*/    
           redibujarDefensor(win,punteroMemoria->posXDefensor,punteroMemoria->ladoDEF);
+          redibujarInvasor(win,punteroMemoria->posXInvasor,lado);
+
           if(contadorTimer ==20){
   	   		actualizarTimer(win);
   	   		contadorTimer=0;
@@ -719,9 +734,7 @@ void jugarDefensor(WINDOW *win){
   	   		actualizarDisparos(win);
 			actualizarCompartidos(win);	
   	   	}
-          punteroMemoria->turno = 2;
-          punteroMemoria->p1_puede_entrar = false;
-	   	usleep(1000000/20);
+  	   //	usleep(1000000/20);
 	   	++contadorTimer;
 	   	key = getch();
 		
@@ -743,6 +756,15 @@ void jugarDefensor(WINDOW *win){
 			generarDisparo(win);
 	    }
 
+          punteroMemoria->turno = 2;
+          punteroMemoria->p1_puede_entrar = false;
+          usleep(1000000/20);
+          mvwprintw(win, 10, 10, "%d", punteroMemoria->termino100);
+          if(punteroMemoria->termino100 ==1){
+	   		break;
+	   		}
+
+	   	
     }
 	gameover(0);
 }
@@ -899,48 +921,48 @@ void redibujarDefensor(WINDOW *win , int posX, int lado){
 void redibujarInvasor(WINDOW *win , int posX, int lado){	
 		//repintarTodo(win);
 		attron(COLOR_PAIR(5));
-		move(	comandante_invasor.y, 	comandante_invasor.x1p);
+		move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x1p);
 				addch(' ');
-				move(	comandante_invasor.y, 	comandante_invasor.x2p);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x2p);
 				addch(' ');
-				move(	comandante_invasor.y, 	comandante_invasor.x3p);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x3p);
 				addch(' ');
-				move(	comandante_invasor.y, 	comandante_invasor.x4p);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x4p);
 				addch(' ');
-				move(	comandante_invasor.y, 	comandante_invasor.x5p);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x5p);
 				addch(' ');
-				move(	comandante_invasor.y, 	comandante_invasor.x6p);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x6p);
 				addch(' ');
-				move(	comandante_invasor.y, 	comandante_invasor.x7p);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x7p);
 				addch(' ');
-						comandante_invasor.x1 = posX;
-						comandante_invasor.x2 = posX+1;
-						comandante_invasor.x3 = posX+2;
-						comandante_invasor.x4 = posX+3;
-						comandante_invasor.x5 = posX+4;
-						comandante_invasor.x6 = posX+5;
-						comandante_invasor.x7 = posX+6;
-				move(	comandante_invasor.y, 	comandante_invasor.x1);
-				addch(	comandante_invasor.ch1);
-				move(	comandante_invasor.y, 	comandante_invasor.x2);
-				addch(	comandante_invasor.ch2);
-				move(	comandante_invasor.y, 	comandante_invasor.x3);
-				addch(	comandante_invasor.ch3);
-				move(	comandante_invasor.y, 	comandante_invasor.x4);
-				addch(	comandante_invasor.ch4);
-				move(	comandante_invasor.y, 	comandante_invasor.x5);
-				addch(	comandante_invasor.ch5);
-				move(	comandante_invasor.y, 	comandante_invasor.x6);
-				addch(	comandante_invasor.ch6);
-				move(	comandante_invasor.y, 	comandante_invasor.x7);
-				addch(	comandante_invasor.ch7);
-						comandante_invasor.x1p = 	comandante_invasor.x1;
-						comandante_invasor.x2p = 	comandante_invasor.x2;
-						comandante_invasor.x3p = 	comandante_invasor.x3;
-						comandante_invasor.x4p = 	comandante_invasor.x4;
-						comandante_invasor.x5p = 	comandante_invasor.x5;
-						comandante_invasor.x6p = 	comandante_invasor.x6;
-						comandante_invasor.x7p = 	comandante_invasor.x7;
+						punteroMemoria->comandante_invasor.x1 = posX;
+						punteroMemoria->comandante_invasor.x2 = posX+1;
+						punteroMemoria->comandante_invasor.x3 = posX+2;
+						punteroMemoria->comandante_invasor.x4 = posX+3;
+						punteroMemoria->comandante_invasor.x5 = posX+4;
+						punteroMemoria->comandante_invasor.x6 = posX+5;
+						punteroMemoria->comandante_invasor.x7 = posX+6;
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x1);
+				addch(	punteroMemoria->comandante_invasor.ch1);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x2);
+				addch(	punteroMemoria->comandante_invasor.ch2);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x3);
+				addch(	punteroMemoria->comandante_invasor.ch3);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x4);
+				addch(	punteroMemoria->comandante_invasor.ch4);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x5);
+				addch(	punteroMemoria->comandante_invasor.ch5);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x6);
+				addch(	punteroMemoria->comandante_invasor.ch6);
+				move(	punteroMemoria->comandante_invasor.y, 	punteroMemoria->comandante_invasor.x7);
+				addch(	punteroMemoria->comandante_invasor.ch7);
+						punteroMemoria->comandante_invasor.x1p = 	punteroMemoria->comandante_invasor.x1;
+						punteroMemoria->comandante_invasor.x2p = 	punteroMemoria->comandante_invasor.x2;
+						punteroMemoria->comandante_invasor.x3p = 	punteroMemoria->comandante_invasor.x3;
+						punteroMemoria->comandante_invasor.x4p = 	punteroMemoria->comandante_invasor.x4;
+						punteroMemoria->comandante_invasor.x5p = 	punteroMemoria->comandante_invasor.x5;
+						punteroMemoria->comandante_invasor.x6p = 	punteroMemoria->comandante_invasor.x6;
+						punteroMemoria->comandante_invasor.x7p = 	punteroMemoria->comandante_invasor.x7;
 		attroff(COLOR_PAIR(5));		
 }
 
@@ -975,23 +997,23 @@ void actualizarDisparos(WINDOW *win){
 	//punteroMemoria->disparos[i] =	punteroMemoria->punteroMemoria->disparos[i];
 		if(punteroMemoria->disparos[i].s == 1){
 			if(punteroMemoria->disparos[i].y==4){
-				if(punteroMemoria->disparos[i].x==comandante_invasor.x1p){	
-				}else if (punteroMemoria->disparos[i].x==comandante_invasor.x2p){
+				if(punteroMemoria->disparos[i].x==punteroMemoria->comandante_invasor.x1p){	
+				}else if (punteroMemoria->disparos[i].x==punteroMemoria->comandante_invasor.x2p){
 					--punteroMemoria->comandante_invasor.vidas;
 					actualizarVidas(win);
-				}else if (punteroMemoria->disparos[i].x==comandante_invasor.x3p){
+				}else if (punteroMemoria->disparos[i].x==punteroMemoria->comandante_invasor.x3p){
 						--punteroMemoria->comandante_invasor.vidas;
 					actualizarVidas(win);
-				}else if (punteroMemoria->disparos[i].x==comandante_invasor.x4p){
+				}else if (punteroMemoria->disparos[i].x==punteroMemoria->comandante_invasor.x4p){
 						--punteroMemoria->comandante_invasor.vidas;
 					actualizarVidas(win);
-				}else if (punteroMemoria->disparos[i].x==comandante_invasor.x5p){
+				}else if (punteroMemoria->disparos[i].x==punteroMemoria->comandante_invasor.x5p){
 						--punteroMemoria->comandante_invasor.vidas;
 					actualizarVidas(win);
-				}else if (punteroMemoria->disparos[i].x==comandante_invasor.x6p){
+				}else if (punteroMemoria->disparos[i].x==punteroMemoria->comandante_invasor.x6p){
 						--punteroMemoria->comandante_invasor.vidas;
 					actualizarVidas(win);
-				}else if (punteroMemoria->disparos[i].x==comandante_invasor.x7p){
+				}else if (punteroMemoria->disparos[i].x==punteroMemoria->comandante_invasor.x7p){
 						--punteroMemoria->comandante_invasor.vidas;
 					actualizarVidas(win);
 				}
@@ -1484,7 +1506,7 @@ int pintarInvasorFuerte(WINDOW *win, int posX, int posY, int xx){
 		if(tipo==0){
 			punteroMemoria->puntajeDefensor = punteroMemoria->puntajeDefensor + 10;
 			attron(COLOR_PAIR(4));
-				mvwprintw(win, 24-2, 8, "%d", punteroMemoria->puntajeDefensor);
+			mvwprintw(win, 24-2, 8, "%d", punteroMemoria->puntajeDefensor);
 		   	attroff(COLOR_PAIR(4));
 		}else{
 			punteroMemoria->puntajeDefensor = punteroMemoria->puntajeDefensor + 15;
@@ -1497,7 +1519,6 @@ int pintarInvasorFuerte(WINDOW *win, int posX, int posY, int xx){
 	void actualizarVidas(WINDOW *win){
 			attron(COLOR_PAIR(4));
 			mvwprintw(win, 1, 75, "%i", punteroMemoria->comandante_invasor.vidas);
-			//punteroMemoria->
 			mvwprintw(win, 24-2, 76, "%i" , punteroMemoria->comandante_defensor.vidas);
 		   	attroff(COLOR_PAIR(4));
 	}
@@ -1508,8 +1529,11 @@ void actualizarCompartidos(WINDOW *win){
 	mvwprintw(win, 1, 10, "%s", ":");
     mvwprintw(win, 1, 11, "%d", punteroMemoria->segundos);
 	mvwprintw(win, 24-2, 8, "%d", punteroMemoria->puntajeDefensor);	
-	//mvwprintw(win, 24-2, 76, "%i" ,punteroMemoria->comandante_defensor.vidas);
+	mvwprintw(win, 24-2, 76, "%i" ,punteroMemoria->comandante_defensor.vidas);
 	mvwprintw(win, 1, 75, "%i", punteroMemoria->comandante_invasor.vidas);
+	if( punteroMemoria->puntajeDefensor==100){
+		punteroMemoria->termino100=1;
+	}
 	attroff(COLOR_PAIR(4));
 //	redibujarDefensorSiempre(win);
 }
