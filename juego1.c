@@ -105,7 +105,7 @@
 int valyM = 5;
 //struct comandante comandante_defensor;
 //struct comandante comandante_invasor;
-struct structMemoria {
+	struct structMemoria {
 		int status;
 	    int  minutos;
 	    int segundos;
@@ -113,14 +113,17 @@ struct structMemoria {
 	 	struct comandante comandante_defensor;
 	  	struct comandante comandante_invasor;
 	  	struct disparo disparos[10]; 
-	int posYDefensor;
-	int posYInvasor;
-	int posXDefensor;
-	int posXInvasor;
-	int vidasDefensor;
-	int vidasInvasor;
+		int posYDefensor;
+		int posYInvasor;
+		int posXDefensor;
+		int posXInvasor;
+		int vidasDefensor;
+		int vidasInvasor;
 	  	int ladoDEF;
 	  	int termino100;
+	  	int ganoInvasor;
+
+	  	int vuelve_pronto;
 	   	//struct Dato data2[4];
 	    bool p1_puede_entrar, p2_puede_entrar;
 	    int turno;
@@ -243,14 +246,14 @@ void initGlobales2(){
 	punteroMemoria->comandante_invasor.x7p=3;
 	punteroMemoria->comandante_invasor.y=3;
 	punteroMemoria->termino100= 0;
+	punteroMemoria->ganoInvasor= 0;
+	punteroMemoria->vuelve_pronto=0;
 }
 		   
 void initGlobales(){
 
 	MEDIO = 38;	
-
 	cantidadDiparos = 0;
-
 	for (int i = 0; i < 10; ++i)
 	{
 		disparosInvasores[i].s = 0;
@@ -297,7 +300,7 @@ void initGlobales(){
 
 unsigned int input;
 int main2(){
-	/*semaforo*/
+	/************************************************semaforos*/
 	keySema = ftok ("/bin/ls", 4);
 	if (keySema == (key_t)-1)
 	{
@@ -365,132 +368,91 @@ void print_in_middle(WINDOW *win, int starty, int startx, int width, char *strin
 	refresh();
 }
 
-/*
-void gameover100(int win) {
-   nodelay(stdscr, 0);
-   if (win == 0) {
-      clear();
-      move((LINES/2)-1,(COLS/2)-5);
-      addstr("Perdiste");
-      move((LINES/2),(COLS/2)-11);
-      addstr("PRESS ANY KEY TO EXIT");
-      move(0,COLS-1);
-      refresh();
-      getch();
-   }
-   
-   else if (win == 1) {
-      clear();
-      move((LINES/2)-1,(COLS/2)-5);
-      addstr("Ganaste!");
-      move((LINES/2),(COLS/2)-11);
-      addstr("PRESS ANY KEY TO EXIT");
-      move(0,COLS-1);
-      refresh();
-      getch();
-   }
-}
-*/
 
 void gameover100(int win) {
-	
-   int key;
- while(1) {  
-   nodelay(stdscr, 0);
-   if (win == 0) {
-      clear();
-      move((LINES/2)-1,(COLS/2)-5);
-      addstr("Perdiste");
-      move((LINES/2)-3,(COLS/2)-27);
-      addstr("Presiona Enter si deseas continuar Jugando o e para salir");
-  	 
-  	  move((LINES/2)+2, 10);
-  	  addstr("Estadisticas:");
-  	mvwprintw(stdscr, (LINES/2)+3, 10, "Tiempo: %d : %d ",punteroMemoria->minutos,punteroMemoria->segundos);
-  	mvwprintw(stdscr,(LINES/2)+4, 10, "Puntaje Defensor: (score) %d", punteroMemoria->puntajeDefensor);	
-   	mvwprintw(stdscr, (LINES/2)+5, 10, "Vidas Defensor: %i" ,punteroMemoria->comandante_defensor.vidas);
-	mvwprintw(stdscr, (LINES/2)+6, 10, "Vidas Comandante:%i", punteroMemoria->comandante_invasor.vidas);
-      refresh();
-       key = getch();
+  	int key;
+ 	while(1) {  
+   	nodelay(stdscr, 0);
+   	if (win == 0) {
+	    clear();
+        move((LINES/2)-5,(COLS/2)-5);
+        addstr("Perdiste!");
+	    move((LINES/2)-3,(COLS/2)-27);
+	    addstr("Presiona Enter si deseas continuar Jugando o e para salir");
+    	move((LINES/2)+2, 10);
+	    addstr("Estadisticas:");
+	  	mvwprintw(stdscr, (LINES/2)+3, 10, "Tiempo: %d : %d ",punteroMemoria->minutos,punteroMemoria->segundos);
+	  	mvwprintw(stdscr,(LINES/2)+4, 10, "Puntaje Defensor: (score) %d", punteroMemoria->puntajeDefensor);	
+	   	mvwprintw(stdscr, (LINES/2)+5, 10, "Vidas Defensor: %i" ,punteroMemoria->comandante_defensor.vidas);
+		mvwprintw(stdscr, (LINES/2)+6, 10, "Vidas Comandante:%i", punteroMemoria->comandante_invasor.vidas);
+        refresh();
+        key = getch();
 		if(key == 10){
 				break;
 		}else if(key == 'e'){
 				break;
 		}
-   }
-   else if (win == 1) {
-      clear();
-      move((LINES/2)-5,(COLS/2)-5);
-      addstr("Ganaste!");
-      move((LINES/2)-3,(COLS/2)-27);
-      addstr("Presiona Enter si deseas continuar Jugando o e para salir");
-  	 
-  	  move((LINES/2)+2, 10);
-  	  addstr("Estadisticas:");
-  	 mvwprintw(stdscr, (LINES/2)+3, 10, "Tiempo: %d : %d ",punteroMemoria->minutos,punteroMemoria->segundos);
-  	mvwprintw(stdscr,(LINES/2)+4, 10, "Puntaje Defensor: (score) %d", punteroMemoria->puntajeDefensor);	
-   	mvwprintw(stdscr, (LINES/2)+5, 10, "Vidas Defensor: %i" ,punteroMemoria->comandante_defensor.vidas);
-	mvwprintw(stdscr, (LINES/2)+6, 10, "Vidas Comandante:%i", punteroMemoria->comandante_invasor.vidas);
-
-
-   /*
-  
-	mvwprintw(win, 1, 10, "%s", ":");
-   
-	
-
-	***/
-
-      refresh();
-      key = getch();
-		if(key == 10){
-			break;
-		}else if(key == 'e'){
+    }
+    else if (win == 1) {
+        clear();
+        move((LINES/2)-5,(COLS/2)-5);
+        if(punteroMemoria->puntajeDefensor>100){
+	        addstr("Ganaste con mas de 100pts!");
+	        }else{
+	        	addstr("Ganaste!");
+	        }
+	        move((LINES/2)-3,(COLS/2)-27);
+	        addstr("Presiona Enter si deseas continuar Jugando o e para salir");
+	  	    move((LINES/2)+2, 10);
+	  	    addstr("Estadisticas:");
+	  	    mvwprintw(stdscr, (LINES/2)+3, 10, "Tiempo: %d : %d ",punteroMemoria->minutos,punteroMemoria->segundos);
+	  	    mvwprintw(stdscr,(LINES/2)+4, 10, "Puntaje Defensor: (score) %d", punteroMemoria->puntajeDefensor);	
+	   	    mvwprintw(stdscr, (LINES/2)+5, 10, "Vidas Defensor: %i" ,punteroMemoria->comandante_defensor.vidas);
+		    mvwprintw(stdscr, (LINES/2)+6, 10, "Vidas Comandante:%i", punteroMemoria->comandante_invasor.vidas);
+	        refresh();
+	        key = getch();
+			if(key == 10){
 				break;
-		}
-   }
-    else if (win == 3) {
-      clear();
-      move((LINES/2)-1,(COLS/2)-5);
-     // addstr("Ganaste!");
-      move((LINES/2),(COLS/2)-7);
-      addstr("VUELVE PRONTO");
-      move(0,COLS-1);
-       move((LINES/2)+2, 10);
-  	  addstr("Estadisticas:");
-     addstr("Estadisticas:");
-  	 mvwprintw(stdscr, (LINES/2)+3, 10, "Tiempo: %d : %d ",punteroMemoria->minutos,punteroMemoria->segundos);
-  	mvwprintw(stdscr,(LINES/2)+4, 10, "Puntaje Defensor: (score) %d", punteroMemoria->puntajeDefensor);	
-   	mvwprintw(stdscr, (LINES/2)+5, 10, "Vidas Defensor: %i" ,punteroMemoria->comandante_defensor.vidas);
-	mvwprintw(stdscr, (LINES/2)+6, 10, "Vidas Comandante:%i", punteroMemoria->comandante_invasor.vidas);
-
-      refresh();
-      key = getch();
-		if(key == 10){
-			break;
-		}else if(key == 'e'){
+			}else if(key == 'e'){
 				break;
+			}
+  		}
+	    else if (win == 3) {
+		    clear();
+		    move((LINES/2),(COLS/2)-7);
+		    addstr("VUELVE PRONTO");
+		    move(0,COLS-1);
+		    move((LINES/2)+2, 10);
+		  	addstr("Estadisticas:");
+		  	mvwprintw(stdscr, (LINES/2)+3, 10, "Tiempo: %d : %d ",punteroMemoria->minutos,punteroMemoria->segundos);
+		  	mvwprintw(stdscr,(LINES/2)+4, 10, "Puntaje Defensor: (score) %d", punteroMemoria->puntajeDefensor);	
+		   	mvwprintw(stdscr, (LINES/2)+5, 10, "Vidas Defensor: %i" ,punteroMemoria->comandante_defensor.vidas);
+			mvwprintw(stdscr, (LINES/2)+6, 10, "Vidas Comandante:%i", punteroMemoria->comandante_invasor.vidas);
+		    refresh();
+		    key = getch();
+				if(key == 10){
+					break;
+				}else if(key == 'e'){
+					break;
+				}
+  	 	}
+	}	
+	if(key != 'e'){
+		printf("%s\n", "llego aca");
+		semctl (idSema, 1, SETVAL, 0);
+		int r2=semctl(idSema, 1, GETVAL, 1);
+		semctl (idSema, 0, SETVAL, 0);
+		r2=semctl(idSema, 0, GETVAL, 0);
+		if(numProceso==1){
+			eliminarMemoriaCompartida();
+		}else{
+			terminarConexionAMemoriaCompartida();
 		}
-   }
-}
-
-	semctl (idSema, 1, SETVAL, 0);
-	int r2=semctl(idSema, 1, GETVAL, 1);
-	//printf("%i valor con el que muere el segundo sem:\n", r2);
-	semctl (idSema, 0, SETVAL, 0);
-	r2=semctl(idSema, 0, GETVAL, 0);
-	///printf("%i valor con el que muere el primer sem:\n", r2);
-	if(numProceso==1){
-		eliminarMemoriaCompartida();
-	}else{
-		terminarConexionAMemoriaCompartida();
 	}
-
-
+	
 	if(key == 10){
 		main2();
-		}
-
+	}
 }
 
 
@@ -593,12 +555,6 @@ void esperarSemaforo1(WINDOW *win){
 	refresh();
 	dibuja_cuadro(win);
 	while(1) {  
-		
-	    /*key = wgetch(stdscr);
-		if(key == 10){
-			break;
-		}*/
-	 
 		if(re==2){
 			Operacion.sem_num = 0;
 			Operacion.sem_op = 1;
@@ -721,6 +677,7 @@ void invasor(WINDOW *win){
 
 void jugarInvasor(WINDOW *win){
 	punteroMemoria->comandante_invasor.vidas=5;
+	punteroMemoria->comandante_defensor.vidas=5;
 	int key=0;
  	int lado = 0;
 	int contadorTimer = 20;
@@ -739,6 +696,7 @@ void jugarInvasor(WINDOW *win){
           /*************************************************************region critica*/
         redibujarInvasor(win,punteroMemoria->posXInvasor,lado);
         redibujarDefensor(win,punteroMemoria->posXDefensor,punteroMemoria->ladoDEF);
+        actualizarDisparoInvasor(win);
         punteroMemoria->turno = 1;
         punteroMemoria->p2_puede_entrar = false;
   	   	if(contadorTimer ==20){
@@ -758,12 +716,8 @@ void jugarInvasor(WINDOW *win){
   	   	}else{
 			actualizarCompartidos(win);
   	   	}
-
-  	   //	usleep(1000000/20);
 	   	++contadorTimer;
-	   	key = getch();
-	   	//redibujarDefensor(win,punteroMemoria->posXDefensor,punteroMemoria->ladoDEF);
-		
+	   	key = getch();		
 		if (key == 'o'){//izquierda 99-c
 	      	if(punteroMemoria->posXInvasor>2){
 	      		--punteroMemoria->posXInvasor;
@@ -775,6 +729,7 @@ void jugarInvasor(WINDOW *win){
 	     		//lado = 0;
 	     	}
 	    } else if (key == 'e'){
+	    	punteroMemoria->vuelve_pronto=1;
 	      	break;
 	    }else if(key=='1'){
 			generarDisparoInvasor(win,17);
@@ -789,29 +744,40 @@ void jugarInvasor(WINDOW *win){
 		/*************************************** termina region critica*************/
 		punteroMemoria->turno = 1;
         punteroMemoria->p2_puede_entrar = false;
+        if(punteroMemoria->vuelve_pronto ==1){
+        	break;
+        }
         usleep(1000000/20);
-   		if(punteroMemoria->termino100 ==1|| punteroMemoria->comandante_invasor.vidas==0){
+   		if(punteroMemoria->termino100 ==1|| punteroMemoria->comandante_invasor.vidas==0
+   			|| punteroMemoria->ganoInvasor==1){
 	   		break;
 	   	}
     }
+
+if(punteroMemoria->ganoInvasor==1){
+	gameover100(1); 
+}else{
    if(punteroMemoria->termino100 ==1 || punteroMemoria->comandante_invasor.vidas==0){
-    		gameover100(1); 	
+    		gameover100(0); 	
     }
-    if(key=='e'){
-			gameover100(3);
+    if(punteroMemoria->vuelve_pronto ==1){
+    	punteroMemoria->turno = 2;
+        punteroMemoria->p1_puede_entrar = false;
+		gameover100(3);
 	}
+}
+
 
 }
 
 void jugarDefensor(WINDOW *win){
+	punteroMemoria->comandante_defensor.vidas=5;
 	punteroMemoria->comandante_invasor.vidas=5;
 	int key=0;
 	int lado = 0;
-	//int lado= 0;//izquierda
 	int contadorTimer = 20;
 	char ladoc = 'd';
-	while(1) {  
-		
+	while(1) {  		
 		/* DEKKER PARA UN PROCESO*/
 		punteroMemoria->p1_puede_entrar = true;
           while( punteroMemoria->p2_puede_entrar ){
@@ -824,7 +790,6 @@ void jugarDefensor(WINDOW *win){
        		/*Region critica*/    
           redibujarDefensor(win,punteroMemoria->posXDefensor,punteroMemoria->ladoDEF);
           redibujarInvasor(win,punteroMemoria->posXInvasor,lado);
-
           if(contadorTimer ==20){
   	   		actualizarTimer(win);
   	   		contadorTimer=0;
@@ -838,7 +803,6 @@ void jugarDefensor(WINDOW *win){
   	   			valyM++;
   	   		}else{
   	   			valyM--;
-  	   			//pintarInvasores(win,valyM,5);
   	   		}
 
   	   	}else{
@@ -862,6 +826,7 @@ void jugarDefensor(WINDOW *win){
 	     		punteroMemoria->ladoDEF = 0;
 	     	}
 	    } else if (key == 'e'){
+	    	punteroMemoria->vuelve_pronto=1;
 	      	break;
 	    }else if(key=='c'){
 			generarDisparo(win);
@@ -869,21 +834,32 @@ void jugarDefensor(WINDOW *win){
 
           punteroMemoria->turno = 2;
           punteroMemoria->p1_puede_entrar = false;
+           if(punteroMemoria->vuelve_pronto ==1){
+        		break;
+        	}
           usleep(1000000/20);
-          mvwprintw(win, 10, 10, "%d", punteroMemoria->termino100);
-          if(punteroMemoria->termino100 ==1|| punteroMemoria->comandante_invasor.vidas==0){
+         // mvwprintw(win, 10, 10, "%d", punteroMemoria->termino100);
+          if(punteroMemoria->termino100 ==1|| punteroMemoria->comandante_invasor.vidas==0 
+          	|| punteroMemoria->ganoInvasor==1){
 	   		break;
 	   		}
 
 	   	
     }
-	
-	if(punteroMemoria->termino100 ==1 || punteroMemoria->comandante_invasor.vidas==0){
+    if(punteroMemoria->ganoInvasor==1){
+		gameover100(0); 
+	}else{
+		if(punteroMemoria->termino100 ==1 || punteroMemoria->comandante_invasor.vidas==0){
     		gameover100(1); 	
-    }
-    if(key=='e'){
+    	}
+    	if(punteroMemoria->vuelve_pronto ==1){
+    		printf("%s\n", "llego aqui");
+    		punteroMemoria->turno = 1;
+          	punteroMemoria->p2_puede_entrar = false;
+          	usleep(1000000/20);
 			gameover100(3);
-	}
+		}
+	}	
 }
 
 void dekker(WINDOW *win){
@@ -1652,6 +1628,8 @@ void actualizarCompartidos(WINDOW *win){
 		punteroMemoria->termino100=1;
 	}else if(punteroMemoria->comandante_invasor.vidas==0){
 		punteroMemoria->termino100=1;
+	}else if (punteroMemoria->comandante_defensor.vidas==0){
+		punteroMemoria->ganoInvasor = 1;
 	}
 	attroff(COLOR_PAIR(4));
 //	redibujarDefensorSiempre(win);
